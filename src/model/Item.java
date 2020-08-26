@@ -53,4 +53,9 @@ public class Item {
 	public void setData(LocalDate data) {
 		this.data = data;
 	}
+	
+	public String toString() {
+		return "Id: " + getId() + " | Descrição: " + getDescricao() +
+				" | criado em: " + getDataFormatada();
+	}
 }
