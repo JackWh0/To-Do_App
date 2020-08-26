@@ -19,7 +19,7 @@ public class ItemDAO {
 		connection = new ConnectionFactory().getConnection();
 	}
 
-	public void adicionarItem(Item item) {
+	public boolean adicionarItem(Item item) {
 		String querry = "insert into item(descricao, data)" + 
 					    "values(?,?)";
 
@@ -30,12 +30,14 @@ public class ItemDAO {
 			stm.setDate(2, java.sql.Date.valueOf(java.time.LocalDate.now()));
 			stm.execute();
 			stm.close();
+			
+			return true;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void editarItem(Item item) {
+	public boolean editarItem(Item item) {
 		try {
 			String querry = "update item set descricao = ?" + "where id = ?";
 			PreparedStatement stm = connection.prepareStatement(querry);
@@ -43,6 +45,7 @@ public class ItemDAO {
 			stm.setInt(2, item.getId());
 			stm.execute();
 			stm.close();
+			return true;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -63,13 +66,14 @@ public class ItemDAO {
 		}
 	}
 
-	public void removerItem(Item item) {
+	public boolean removerItem(Item item) {
 		try {
 			String querry = "delete from item where id = ?";
 			PreparedStatement stm = connection.prepareStatement(querry);
 			stm.setInt(1, item.getId());
 			stm.execute();
 			stm.close();
+			return true;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -145,5 +149,30 @@ public class ItemDAO {
 		}
 
 		return item;
+	}
+	
+	public Item verificarSeExistePeloId(int id) {
+		String querry = "select realizado, ativo from Item where id = " + id;
+		Item item = new Item();
+
+		try {
+			PreparedStatement stm = connection.prepareStatement(querry);
+			ResultSet rs = stm.executeQuery();
+			
+
+			while (rs.next()) {
+				item.setId(id);
+				item.setRealizado(rs.getBoolean("realizado"));
+				item.setAtivo(rs.getBoolean("ativo"));
+			}
+			
+			rs.close();
+			stm.close();
+			return item;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+			return null;
 	}
 }
